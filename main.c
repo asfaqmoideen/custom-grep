@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-// void toLower(char *);
+
 
 void toLower(char *pattern)
 {
-    for (int i = 0; i < pattern[i]; i++)
+    for (int i = 0; pattern[i]; i++)
     {
         pattern[i] = tolower(pattern[i]);
     }
@@ -14,34 +14,35 @@ void toLower(char *pattern)
 void searchPattern(FILE *file, char *pattern)
 {
 
+    printf("Matching Case Pattern\n");
     char line[256];
     while (fgets(line, sizeof(line), file))
     {
         if (strstr(line, pattern) != NULL)
         {
-            printf("%s\n", line);
+            printf("%s", line);
         }
     }
-    printf("Matching Case Pattern\n");
 }
 
 void searchCaseInsensitivePattern(FILE *file, char *pattern)
 {
 
+    printf("Matching Case Insensitive Pattern\n");
     char line[256];
     toLower(pattern);
     while (fgets(line, sizeof(line), file))
     {
         if (strstr(line, pattern) != NULL)
         {
-            printf("%s\n", line);
+            printf("%s", line);
         }
     }
-    printf("Matching Case Insensitive Pattern\n");
 }
 
 void findMatchedLineNumber(FILE *file, char *pattern)
 {
+    printf("Matching Line NUmber\n");
     int lineNumber = 0;
     char line[256];
     while (fgets(line, sizeof(line), file))
@@ -51,7 +52,6 @@ void findMatchedLineNumber(FILE *file, char *pattern)
             printf("%d", lineNumber++);
         }
     }
-    printf("Matching Line NUmber\n");
 }
 
 void printNonMatchingPattern(FILE *file, char *pattern)
@@ -62,7 +62,7 @@ void printNonMatchingPattern(FILE *file, char *pattern)
     {
         if (strstr(line, pattern) == NULL)
         {
-            printf("%s\n", line);
+            printf("%s", line);
         }
     }
     printf("Non - Matching Case Patter\n");
@@ -90,9 +90,17 @@ int main(int args, char *argv[])
     }
 
     searchPattern(file, argv[1]);
+    rewind(file);
+
     searchCaseInsensitivePattern(file, argv[1]);
+    rewind(file);
+
     findMatchedLineNumber(file, argv[1]);
+    rewind(file);
+    
     printNonMatchingPattern(file, argv[1]);
+    rewind(file);
+    
     printNumberOfOccurences(file, argv[1]);
     fclose(file);
     return 0;
