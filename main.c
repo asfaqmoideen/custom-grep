@@ -3,19 +3,36 @@
 #include <ctype.h>
 
 
-void toLower(char *pattern)
+#if defined(_WIN32) || defined(__APPLE__)
+#error "This program is only compatible with Linux"
+#endif
+char line[256];
+
+void printGrepMenu(){
+    printf(" Custom grep using C");
+    printf("\n provide appropriate input to excute grep - Input pattern is as follows");
+    printf("\n `grep` `option` `pattern` `filepath`" );
+    printf("\n deafult (without option) search for pattern in case sensitive mannner ");
+    printf("\n -i, --ignore-case: Ignores case distinctions in patterns and input data.");
+    printf("\n -v, --invert-match: Selects the non-matching lines of the provided input pattern.");
+    printf("\n -n, --line-number: Prefix each line of the matching output with the line number in the input file.");
+    printf("\n -w: Find the exact matching word from the input file or string.");
+    printf("\n -c: Count the number of occurrences of the provided pattern.\n");
+}
+
+char* toLower(char *stringToLowerCase)
 {
-    for (int i = 0; pattern[i]; i++)
+    for (int i = 0; stringToLowerCase[i]; i++)
     {
-        pattern[i] = tolower(pattern[i]);
+        stringToLowerCase[i] = tolower(stringToLowerCase[i]);
     }
+
+    return stringToLowerCase;
 }
 
 void searchPattern(FILE *file, char *pattern)
 {
-
     printf("Matching Case Pattern\n");
-    char line[256];
     while (fgets(line, sizeof(line), file))
     {
         if (strstr(line, pattern) != NULL)
@@ -27,13 +44,11 @@ void searchPattern(FILE *file, char *pattern)
 
 void searchCaseInsensitivePattern(FILE *file, char *pattern)
 {
-
     printf("Matching Case Insensitive Pattern\n");
-    char line[256];
-    toLower(pattern);
+
     while (fgets(line, sizeof(line), file))
     {
-        if (strstr(line, pattern) != NULL)
+        if (strstr(toLower(line), toLower(pattern)) != NULL)
         {
             printf("%s", line);
         }
@@ -42,14 +57,13 @@ void searchCaseInsensitivePattern(FILE *file, char *pattern)
 
 void findMatchedLineNumber(FILE *file, char *pattern)
 {
-    printf("Matching Line NUmber\n");
+    printf("Matching Line Number\n");
     int lineNumber = 0;
-    char line[256];
     while (fgets(line, sizeof(line), file))
     {
         if (strstr(line, pattern) != NULL)
         {
-            printf("%d", lineNumber++);
+            printf("%d\n", lineNumber++);
         }
     }
 }
@@ -57,7 +71,6 @@ void findMatchedLineNumber(FILE *file, char *pattern)
 void printNonMatchingPattern(FILE *file, char *pattern)
 {
 
-    char line[256];
     while (fgets(line, sizeof(line), file))
     {
         if (strstr(line, pattern) == NULL)
@@ -70,19 +83,24 @@ void printNonMatchingPattern(FILE *file, char *pattern)
 
 void printNumberOfOccurences(FILE *file, char *pattern)
 {
-    char line[256];
     int count =0;
     while (fgets(line, sizeof(line), file))
     {
-        if (strstr(line, pattern) == NULL) count++;
+        if (strstr(line, pattern) != NULL) count++;
     }
     printf("No Of Occurences is %d", count);
 }
-int main(int args, char *argv[])
-{
-    FILE *file;
 
-    file = fopen(argv[2], "r");
+int main(int args, char *argv[])
+{   
+    if(args < 3){
+        printGrepMenu();
+        return 1;
+    }
+    
+    FILE *file;
+    file = fopen(argv[args-1], "r");
+
     if (file == NULL)
     {
         printf("Error opening the file\n");
@@ -103,5 +121,6 @@ int main(int args, char *argv[])
     
     printNumberOfOccurences(file, argv[1]);
     fclose(file);
+    
     return 0;
 }
