@@ -73,10 +73,11 @@ void findMatchedLineNumber(FILE *file, char *pattern)
     printf("Matching Line Numbers are\n");
     int lineNumber = 0;
     while (fgets(line, sizeof(line), file))
-    {
+    {   
+        lineNumber++;
         if (strstr(line, pattern) != NULL)
         {
-            printf("%d\n", lineNumber++);
+            printf("%d\n",lineNumber );
         }
     }
 }
